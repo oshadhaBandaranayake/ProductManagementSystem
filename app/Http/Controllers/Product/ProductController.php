@@ -13,11 +13,8 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     public function __construct(
-        protected ProductsInterface $productsRepository
-    )
-    {
-
-    }
+        protected ProductsInterface $productsInterface
+    ) {}
     /**
      * Method index
      *
@@ -51,18 +48,16 @@ class ProductController extends Controller
     {
         //handle image upload
         $imagePath = null;
-        if ($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        //create product
-        Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'image' => $imagePath,
-        ]);
+        // Prepare product data array
+        $requestData = $request->all();
+        $requestData['image'] = $imagePath;
 
+        // Create product using repository pattern
+        $this->productsInterface->create($requestData);
 
         return redirect()->route('products.index')->with('success', 'Product created successfully!');
     }
@@ -103,23 +98,24 @@ class ProductController extends Controller
     {
         //handle image upload
         $imagePath = $product->image;
-        if ($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             //delete old image
-            if($imagePath){
+            if ($imagePath) {
                 Storage::disk('public')->delete($imagePath);
             }
             //store new image
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        //update product
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'image' => $imagePath,
-        ]);
+        //get validate data from the request
+        $requestData = $request->all();
 
+        //add image path to request array if there is an image
+        if ($imagePath) {
+            $requestData['image'] = $imagePath;
+        }
+
+        $this->productsInterface->update($product->id, $requestData);
         return redirect()->route('products.index')->with('success', 'Product updated successfully!');
     }
 
@@ -133,12 +129,11 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //delete product image
-        if($product->image){
+        if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
         //delete product
-        $product->delete();
-
+        $this->productsInterface->deleteById($product->id);
         return redirect()->route('products.index')->with('success', 'Product deleted successfully!');
     }
 }
