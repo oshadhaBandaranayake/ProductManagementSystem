@@ -6,11 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductsCreateRequest;
 use App\Http\Requests\ProductsUpdateRequest;
 use App\Models\Product;
+use App\Repositories\Products\ProductsInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        protected ProductsInterface $productsRepository
+    )
+    {
+
+    }
+    /**
+     * Method index
+     *
+     * @return void
+     */
     public function index()
     {
         //10 products per page
@@ -18,11 +30,23 @@ class ProductController extends Controller
         return view('products.index', compact('products'));
     }
 
+    /**
+     * Method create
+     *
+     * @return void
+     */
     public function create()
     {
         return view('products.create');
     }
 
+    /**
+     * Method store
+     *
+     * @param ProductsCreateRequest $request [explicite description]
+     *
+     * @return void
+     */
     public function store(ProductsCreateRequest $request)
     {
         //handle image upload
@@ -43,16 +67,38 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product created successfully!');
     }
 
+    /**
+     * Method show
+     *
+     * @param Product $product [explicite description]
+     *
+     * @return void
+     */
     public function show(Product $product)
     {
         return view('products.show', compact('product'));
     }
 
+    /**
+     * Method edit
+     *
+     * @param Product $product [explicite description]
+     *
+     * @return void
+     */
     public function edit(Product  $product)
     {
         return view('products.edit', compact('product'));
     }
 
+    /**
+     * Method update
+     *
+     * @param ProductsUpdateRequest $request [explicite description]
+     * @param Product $product [explicite description]
+     *
+     * @return void
+     */
     public function update(ProductsUpdateRequest $request, Product $product)
     {
         //handle image upload
@@ -77,6 +123,13 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product updated successfully!');
     }
 
+    /**
+     * Method destroy
+     *
+     * @param Product $product [explicite description]
+     *
+     * @return void
+     */
     public function destroy(Product $product)
     {
         //delete product image

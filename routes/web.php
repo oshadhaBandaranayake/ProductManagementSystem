@@ -4,15 +4,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 
-//Product Routes
-// Route::controller('product', ProductController::class)->group(function () {
-//     Route::get('/', 'index')->name('product.index');
-//     Route::get('/create',  'create')->name('product.create');
-//     Route::post('/store', 'store')->name('product.store');
-//     Route::get('/{product}/edit',  'edit')->name('product.edit');
-//     Route::put('/{product}/update',  'update')->name('product.update');
-//     Route::delete('/{product}/delete', 'destroy')->name('product.delete');
-// });
 
 // Authentication Routes
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
