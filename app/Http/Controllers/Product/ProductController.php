@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductsCreateRequest;
-use App\Http\Requests\ProductsUpdateRequest;
+use App\Http\Requests\Products\ProductsCreateRequest;
+use App\Http\Requests\Products\ProductsUpdateRequest;
 use App\Models\Product;
 use App\Repositories\Products\ProductsInterface;
 use Illuminate\Http\Request;
@@ -25,8 +25,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //10 products per page
-        $products = Product::paginate(10);
+        //6 products per page
+        $products = Product::paginate(6);
         return view('products.index', compact('products'));
     }
 

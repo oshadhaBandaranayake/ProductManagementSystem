@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Users\UsersCreateRequest;
+use App\Http\Requests\Users\UsersUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,26 +19,18 @@ class AuthController extends Controller
     }
 
     // Handle Registration
-    public function register(Request $request)
+    public function register(UsersCreateRequest $request)
     {
-        // Validate the request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        // Create the user
+        // Create  user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        // Log the user in
+        // Log  user in
         Auth::login($user);
 
-        // Redirect to dashboard
         return redirect()->route('login');
     }
 
@@ -47,14 +41,8 @@ class AuthController extends Controller
     }
 
     // Handle Login
-    public function login(Request $request)
+    public function login(UsersUpdateRequest $request)
     {
-        // Validate the request
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
         // Attempt to log the user in
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Redirect to dashboard

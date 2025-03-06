@@ -12,4 +12,14 @@ class Product extends Model
         'price',
         'image',
     ];
+
+    /**
+     * Method user
+     *
+     * @return void
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
