@@ -5,21 +5,37 @@ use App\Http\Controllers\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 
 
+//Initial Route Definition
+Route::redirect('/', '/login');
+
 // Authentication Routes
-Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 
-Route::prefix('product')->group(function () {
-    Route::get('/', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/store', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/{product}/show', [ProductController::class, 'show'])->name('products.show');
-    Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/{product}/update', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/{product}/delete', [ProductController::class, 'destroy'])->name('products.delete');
+
+
+Route::middleware(['auth'])->group(function () {
+
+    //Product Routes
+    Route::prefix('products')->controller(ProductController::class)->name('products.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create',  'create')->name('create');
+        Route::post('/store',  'store')->name('store');
+        Route::get('/{product}/show',  'show')->name('show');
+        Route::get('/{product}/edit',  'edit')->name('edit');
+        Route::put('/{product}/update', 'update')->name('update');
+        Route::delete('/{product}/delete',  'destroy')->name('delete');
+    });
 });
+
+
+
+
+
+
+

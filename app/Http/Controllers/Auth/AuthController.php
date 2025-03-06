@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Users\UsersCreateRequest;
-use App\Http\Requests\Users\UsersUpdateRequest;
+use App\Http\Requests\Auth\LoginRequest as AuthLoginRequest;
+use App\Http\Requests\Auth\RegisterRequest as AuthRegisterRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,21 +18,24 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+
     // Handle Registration
-    public function register(UsersCreateRequest $request)
+    public function register(AuthRegisterRequest $request)
     {
-        // Create  user
+        // Create the user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        // Log  user in
+        // Log the user in
         Auth::login($user);
 
-        return redirect()->route('login');
+        // Redirect to dashboard
+        return redirect()->route('login')->with('success', 'User Registration Successfully!');
     }
+
 
     // Show Login Form
     public function showLoginForm()
@@ -41,17 +44,18 @@ class AuthController extends Controller
     }
 
     // Handle Login
-    public function login(UsersUpdateRequest $request)
+    public function login(AuthLoginRequest $request)
     {
         // Attempt to log the user in
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Redirect to dashboard
-            return redirect()->route('products.index');
+            return redirect()->route('products.index')->with('success', 'User Login Successfully!');
         }
 
         // If login fails, redirect back with error
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
+
 
     // Handle Logout
     public function logout(Request $request)
@@ -59,6 +63,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect(route('login'));
     }
 }
